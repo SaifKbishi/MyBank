@@ -1,14 +1,36 @@
 const chalk = require('chalk');
 const fs = require('fs');
-const DB = './db/bank.json'
-const entity = 'account';
+const DB = './db/bank.json';
 
 //try{}catch(error){console.log(`Could not toggle Account status: ${error}`)}
 //if(){}else{}
 //if(accountFound.IsActive){}else{console.log('This account is '+ chalk.red('NOT ACTIVE')+', you cannot perform any task to it while it is still '+ chalk.red('NOT ACTIVE'))}
 
-const transferMoney = ()=>{
- console.log('trying to transfer Money');
+const transferMoney = (ppID1, ppID2, amountToTransfer)=>{
+ console.log(`trying to transfer Money from ppID1=24770013 to ppID2=83761307 250$`);
+ const accounts = displayAllAccounts(ppID1, ppID2, amountToTransfer);
+ const account1 = findAccountByPassPortID(accounts, ppID1);
+ const account2 = findAccountByPassPortID(accounts, ppID2);
+ if(account1.IsActive && account2.IsActive){
+  try{
+   if(Number.parseInt(account1.cash) + Number.parseInt(account1.credit) >= Number.parseInt(amountToTransfer)){// can transfer the money
+    Number.parseInt(account2.cash) = Number.parseInt(account2.cash) + Number.parseInt(amountToTransfer);
+    console.log('account2.cash', account2.cash);
+    if(account1.cash <= amountToTransfer){
+     Number.parseInt(account1.cash) =0;
+     let reminder = Number.parseInt(amountToTransfer) - Number.parseInt(account1.cash);
+     Number.parseInt(account1.credit) = Number.parseInt(account1.credit) - reminder;
+     console.log('account1 cash and credit: ', account1.cash, account1.credit);
+    }else{ //account1.cash > amountToTransfer;
+     Number.parseInt(account1.cash) = Number.parseInt(account1.cash) - Number.parseInt(amountToTransfer);
+     console.log('account1 cash and credit: ', account1.cash, account1.credit);
+    }
+    saveAccounts(accounts);
+   }else{
+    console.log(`Source account with PassPortID: `+chalk.red(`${ppID1}`)+` does not enought balance to transfer the requestd amount!`);
+   }
+  }catch(error){console.log(`Could not Transfer money between the accounts : ${error}`)}
+ }else{console.log('One of the accounts is '+ chalk.red('NOT ACTIVE')+', you cannot perform any task to it while it is still '+ chalk.red('NOT ACTIVE'));}
 }//transferMoney
 
 const withdrawMoney =(ppID, amountToWithdraw)=>{
@@ -111,13 +133,13 @@ const findAccountByNameOrppID = (accounts, name='', ppID=0)=>{
  let accountFound;
  if(accountFound = accounts.find((account)=>{return account.name == name;}) )
  {
-  //console.log('accountFound',accountFound);
   return accountFound;//returns undefined if account is not found else  returns the accoutn
  }
  else if(accountFound = accounts.find((account)=>{return account.ppID == ppID;})) //this is a random number
  {
-  //console.log('accountFound',accountFound);
   return accountFound;//returns undefined if account is not found else  returns the accoutn
+ }else{
+  return false;
  }
 }//findAccountByNameOrppID
 
@@ -136,6 +158,7 @@ const addNewAccount = (argv)=>{//newly created accounts are Active be defaut
     credit: argv.credit, 
     IsActive: argv.IsActive
    });
+   console.log(`New account was created succsesfully.`)
    saveAccounts(accounts);
   }else{
    console.log(`Account with PassPortID=`+ chalk.red(argv.ppID) +` or Name=`+ chalk.red(argv.name) +` already exits. \nAnd will not be created`);
