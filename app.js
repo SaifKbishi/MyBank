@@ -7,10 +7,18 @@ const {displayAllAccounts, addNewAccount, changeAccountStatus, displayOneAccount
 const entity = 'account';
 
 //set credit to account
+app.put(`/api/accounts/withdraw/:ppID/:amount`, (req, res)=>{
+ const {ppID,amount} = req.params;
+ // const {cash,credit} = req.body; 
+ console.log(ppID,amount);
+ const withdrawmoney = withdrawMoney(ppID, amount);
+ res.status(200).send(withdrawmoney);
+});
+
+//set credit to account
 app.put(`/api/accounts/credit/:ppID`, (req, res)=>{
  const {ppID} = req.params;
  const {credit} =req.body;
- console.log(req.params, req.body);
  const setCredit = updateAccountCredit(ppID, credit);
  res.status(200).send(setCredit);
 });

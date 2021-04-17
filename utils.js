@@ -5,49 +5,77 @@ const entity = 'account';
 
 //try{}catch(error){console.log(`Could not toggle Account status: ${error}`)}
 //if(){}else{}
+//if(accountFound.IsActive){}else{console.log('This account is '+ chalk.red('NOT ACTIVE')+', you cannot perform any task to it while it is still '+ chalk.red('NOT ACTIVE'))}
+
+const transferMoney = ()=>{
+ console.log('trying to transfer Money');
+}//transferMoney
+
+const withdrawMoney =(ppID, amountToWithdraw)=>{
+ console.log('trying to withdraw Money');
+ const accounts = displayAllAccounts();
+ const accountFound = findAccountByPassPortID(accounts, ppID);
+ const accountCash = accountFound.cash;
+ const accountCredit = accountFound.credit;
+ if(accountFound.IsActive){
+  if(accountCash + accountCredit >= amountToWithdraw){
+   try{
+    if(accountFound){
+     accountFound.cash = accountFound.cash - amountToWithdraw;
+     console.log(`Account name ${ppID} new balance is: `,accountFound.cash );
+     saveAccounts(accounts);
+    }else{
+     console.log(`Withdraw, Account with` +chalk.green(`PassPortID=${ppID}`)+`, was not found.`);
+    }
+   }catch(error){console.log(`Could not withdraw money from this account: ${error}`)}
+  }else{
+   console.log(`The amount you are trying to withdraw is greater than your Cash & Credit `+chalk.blue(`${accountCash + accountCredit}$`)+`, you can to ask to withdraw for equal or less than: ${accountCash + accountCredit}$`)
+  }
+ }else{console.log('This account is '+ chalk.red('NOT ACTIVE')+', you cannot perform any task to it while it is still '+ chalk.red('NOT ACTIVE'))} 
+}//withdrawMoney
 
 const updateAccountCredit = (ppID=0,amount=0)=>{
  console.log('trying to set Credit');
  console.log('11:',ppID ,' $ ', amount);
- if(amount > 0){
-  const accounts = displayAllAccounts();
-  const accountFound=findAccountByPassPortID(accounts, ppID);
-  try{
-   if(accountFound){
-    console.log('17 current credit',accountFound.credit );
-    accountFound.credit = accountFound.credit+amount;
-    console.log(`Account name ${ppID} new credit is: `,accountFound.credit );
-    saveAccounts(accounts);
-   }else{
-    console.log(`Credit, Account with` +chalk.green(`PassPortID=${ppID}`)+`, was not found.`);
-   }
-  }catch(error){console.log(`Could not toggle Account status: ${error}`)}
- }else{
-  console.log(`The amount you are trying to add is equal or less than 0, nothing will be executed.`)
- }
+ const accounts = displayAllAccounts();
+ const accountFound = findAccountByPassPortID(accounts, ppID);
+ if(accountFound.IsActive){
+  if(amount > 0){  
+   try{
+    if(accountFound){
+     console.log('17 current credit',accountFound.credit );
+     accountFound.credit = accountFound.credit+amount;
+     console.log(`Account name ${ppID} new credit is: `,accountFound.credit );
+     saveAccounts(accounts);
+    }else{
+     console.log(`Credit, Account with` +chalk.green(`PassPortID=${ppID}`)+`, was not found.`);
+    }
+   }catch(error){console.log(`Could not set the credit for this account: ${error}`)}
+  }else{
+   console.log(`The amount you are trying to add is equal or less than 0, nothing will be changed.`)
+  }
+ }else{console.log('This account is '+ chalk.red('NOT ACTIVE')+', you cannot perform any task to it while it is still '+ chalk.red('NOT ACTIVE'))} 
 }//updateAccountCredit
-
-const withdrawMoney =()=>{
- console.log('withdrawMoney')
-}//withdrawMoney
 
 const AddDeposit =(ppID=0,amount=0)=>{
  console.log('trying to add Deposit');
- if(amount > 0){
-  const accounts = displayAllAccounts();
-  const accountFound=findAccountByPassPortID(accounts, ppID);
-  try{  
-   if(accountFound){
-    accountFound.cash = accountFound.cash+amount;
-    console.log(`Account name `+ chalk.green(`${ppID}`) +` new balance is: `,accountFound.cash );
-    saveAccounts(accounts);
-   }else{
-    console.log(`Deposit, Account with ` +chalk.green(`PassPortID=${ppID}`)+`, was not found.`);
-   }
-  }catch(error){console.log(`Could not perform deposit to Account: ${error}`)}
- }else{
-  console.log(`The amount you are trying to add is equal or less than 0, nothing will be executed.`)
- } 
+ const accounts = displayAllAccounts();
+ const accountFound=findAccountByPassPortID(accounts, ppID);
+ if(accountFound.IsActive){
+  if(amount > 0 ){  
+   try{  
+    if(accountFound){
+     accountFound.cash = accountFound.cash+amount;
+     console.log(`Account name `+ chalk.green(`${ppID}`) +` new balance is: `,accountFound.cash );
+     saveAccounts(accounts);
+    }else{
+     console.log(`Deposit, Account with ` +chalk.green(`PassPortID=${ppID}`)+`, was not found.`);
+    }
+   }catch(error){console.log(`Could not perform deposit to Account: ${error}`)}
+  }else{
+   console.log(`The amount you are trying to add is equal or less than 0, nothing will be executed.`)
+  }
+ }else{console.log('This account is '+ chalk.red('NOT ACTIVE')+', you cannot perform any task to it while it is still '+ chalk.red('NOT ACTIVE'))} 
 }//AddDeposit
 
 const changeAccountStatus = (name, IsActive)=>{
@@ -70,8 +98,7 @@ const changeAccountStatus = (name, IsActive)=>{
 const findAccountByPassPortID = (accounts, ppID)=>{
  console.log(ppID);
  const accountFound = accounts.find((account)=>{return account.ppID == ppID;});
- if(accountFound){//returns undefined if account is not found else  returns the accoutn
-  console.log('accountFound',accountFound);
+ if(accountFound){//returns undefined if account is not found else  returns the account
   return accountFound;
  }else{
   console.log('Account was not found ');
@@ -159,5 +186,5 @@ module.exports ={
  AddDeposit, 
  withdrawMoney, 
  updateAccountCredit, 
- // transferMoney,
+ transferMoney,
 };
