@@ -6,6 +6,16 @@ app.use(express.json());//now express can understand JSON
 const {displayAllAccounts, addNewAccount, changeAccountStatus, displayOneAccount, updateAccountDetails, deleteOneAcount, AddDeposit, withdrawMoney, updateAccountCredit, transferMoney, } = require("./utils");
 const entity = 'account';
 
+//add deposit to account
+app.put(`/api/accounts/adddeposit/:name`, (req, res)=>{
+ const {name} = req.params;
+ const {cash} =req.body;
+ console.log(req.params, req.body);
+ const addcash = AddDeposit(name, cash);
+ res.status(200).send(addcash);
+});
+
+
 //toggle account status by name
 app.put(`/api/accounts/togglestatus/:name`, (req, res)=>{
  const {name} = req.params;

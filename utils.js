@@ -6,8 +6,23 @@ const entity = 'account';
 //try{}catch(error){console.log(`Could not toggle Account status: ${error}`)}
 //if(){}else{}
 
-const AddDeposit =()=>{
+
+
+const AddDeposit =(name='',amount=0)=>{
  console.log('trying to add Deposit');
+ console.log('11:',name ,' $ ', amount);
+ const accounts = displayAllAccounts();
+ let accountFound=findAccountByNameOrppID(accounts, name, amount);
+ try{  
+  if(accountFound){
+   console.log('14 current stauts',accountFound.cash );
+   accountFound.cash = accountFound.cash+amount;
+   console.log(`Account name ${name} new balance is: `,accountFound.cash );
+   saveAccounts(accounts);
+  }else{
+   console.log(`Account with name=${name}, was not found.`);
+  }
+ }catch(error){console.log(`Could not toggle Account status: ${error}`)}
 }//AddDeposit
 
 const changeAccountStatus = (name, IsActive)=>{
