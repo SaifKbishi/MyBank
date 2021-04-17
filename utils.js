@@ -6,23 +6,48 @@ const entity = 'account';
 //try{}catch(error){console.log(`Could not toggle Account status: ${error}`)}
 //if(){}else{}
 
+const updateAccountCredit = (ppID=0,amount=0)=>{
+ console.log('trying to set Credit');
+ console.log('11:',ppID ,' $ ', amount);
+ if(amount > 0){
+  const accounts = displayAllAccounts();
+  const accountFound=findAccountByPassPortID(accounts, ppID);
+  try{
+   if(accountFound){
+    console.log('17 current credit',accountFound.credit );
+    accountFound.credit = accountFound.credit+amount;
+    console.log(`Account name ${ppID} new credit is: `,accountFound.credit );
+    saveAccounts(accounts);
+   }else{
+    console.log(`Credit, Account with` +chalk.green(`PassPortID=${ppID}`)+`, was not found.`);
+   }
+  }catch(error){console.log(`Could not toggle Account status: ${error}`)}
+ }else{
+  console.log(`The amount you are trying to add is equal or less than 0, nothing will be executed.`)
+ }
+}//updateAccountCredit
 
+const withdrawMoney =()=>{
+ console.log('withdrawMoney')
+}//withdrawMoney
 
-const AddDeposit =(name='',amount=0)=>{
+const AddDeposit =(ppID=0,amount=0)=>{
  console.log('trying to add Deposit');
- console.log('11:',name ,' $ ', amount);
- const accounts = displayAllAccounts();
- let accountFound=findAccountByNameOrppID(accounts, name, amount);
- try{  
-  if(accountFound){
-   console.log('14 current stauts',accountFound.cash );
-   accountFound.cash = accountFound.cash+amount;
-   console.log(`Account name ${name} new balance is: `,accountFound.cash );
-   saveAccounts(accounts);
-  }else{
-   console.log(`Account with name=${name}, was not found.`);
-  }
- }catch(error){console.log(`Could not toggle Account status: ${error}`)}
+ if(amount > 0){
+  const accounts = displayAllAccounts();
+  const accountFound=findAccountByPassPortID(accounts, ppID);
+  try{  
+   if(accountFound){
+    accountFound.cash = accountFound.cash+amount;
+    console.log(`Account name `+ chalk.green(`${ppID}`) +` new balance is: `,accountFound.cash );
+    saveAccounts(accounts);
+   }else{
+    console.log(`Deposit, Account with ` +chalk.green(`PassPortID=${ppID}`)+`, was not found.`);
+   }
+  }catch(error){console.log(`Could not perform deposit to Account: ${error}`)}
+ }else{
+  console.log(`The amount you are trying to add is equal or less than 0, nothing will be executed.`)
+ } 
 }//AddDeposit
 
 const changeAccountStatus = (name, IsActive)=>{
@@ -41,6 +66,18 @@ const changeAccountStatus = (name, IsActive)=>{
   }
  }catch(error){console.log(`Could not toggle Account status: ${error}`)}
 }//changeAccountStatus
+
+const findAccountByPassPortID = (accounts, ppID)=>{
+ console.log(ppID);
+ const accountFound = accounts.find((account)=>{return account.ppID == ppID;});
+ if(accountFound){//returns undefined if account is not found else  returns the accoutn
+  console.log('accountFound',accountFound);
+  return accountFound;
+ }else{
+  console.log('Account was not found ');
+  return false;
+ }
+}//findAccountByPassPortID
 
 const findAccountByNameOrppID = (accounts, name='', ppID=0)=>{
  console.log(name, ppID);
@@ -120,7 +157,7 @@ module.exports ={
  // updateAccountDetails, 
  deleteOneAcount, 
  AddDeposit, 
- // withdrawMoney, 
- // updateAccountCredit, 
+ withdrawMoney, 
+ updateAccountCredit, 
  // transferMoney,
 };

@@ -6,21 +6,27 @@ app.use(express.json());//now express can understand JSON
 const {displayAllAccounts, addNewAccount, changeAccountStatus, displayOneAccount, updateAccountDetails, deleteOneAcount, AddDeposit, withdrawMoney, updateAccountCredit, transferMoney, } = require("./utils");
 const entity = 'account';
 
-//add deposit to account
-app.put(`/api/accounts/adddeposit/:name`, (req, res)=>{
- const {name} = req.params;
- const {cash} =req.body;
+//set credit to account
+app.put(`/api/accounts/credit/:ppID`, (req, res)=>{
+ const {ppID} = req.params;
+ const {credit} =req.body;
  console.log(req.params, req.body);
- const addcash = AddDeposit(name, cash);
- res.status(200).send(addcash);
+ const setCredit = updateAccountCredit(ppID, credit);
+ res.status(200).send(setCredit);
 });
 
+//add deposit to account
+app.put(`/api/accounts/deposit/:ppID`, (req, res)=>{
+ const {ppID} = req.params;
+ const {cash} =req.body;
+ const addcash = AddDeposit(ppID, cash);
+ res.status(200).send(addcash);
+});
 
 //toggle account status by name
 app.put(`/api/accounts/togglestatus/:name`, (req, res)=>{
  const {name} = req.params;
  const {IsActive} = req.body;
- console.log(req.params, req.body);
  console.log('put IsActive', IsActive);
  const toggleAccountStatus = changeAccountStatus(name, IsActive);
  res.status(200).send(toggleAccountStatus);
