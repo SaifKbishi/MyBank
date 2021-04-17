@@ -48,6 +48,13 @@ app.put(`/api/accounts/togglestatus/:name`, (req, res)=>{
  res.status(200).send(toggleAccountStatus);
 });
 
+//edit account name by name
+app.put(`/api/accounts/edit/:name/:newname`, (req, res)=>{
+ const {name, newname} = req.params;
+ const editAccountStatus = updateAccountDetails(name,newname);
+ res.status(200).send(editAccountStatus);
+});
+
 //delete an account
 app.delete(`/api/accounts/delete/:name`, (req, res)=>{
  const {name} = req.params;
@@ -69,8 +76,17 @@ app.post(`/api/accounts/create`, (req, res)=>{
  }
 });
 
+//display one account
+app.get(`/api/accounts/displayaccount/name`, (req,res)=>{
+ console.log('hello')
+ const {name} = req.params;
+ console.log(name)
+ const anAccount = displayOneAccount(name);
+ res.status(200).send(anAccount);
+});
+
 //retrieve All Accounts
-app.get(`/api/${entity}s/allaccounts`, (req, res)=>{
+app.get(`/api/accounts/allaccounts`, (req, res)=>{
  const allAccount = displayAllAccounts();
  res.status(200).send(allAccount);
 });

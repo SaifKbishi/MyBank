@@ -20,7 +20,7 @@ const transferMoney = (ppID1, ppID2, amountToTransfer)=>{
   try{
    if(account1_cash + account1_credit >= amount){// can transfer the money
     account2.cash = account2_cash + amount;
-    console.log('account2.cash', account2.cash, '$');
+    console.log('account2 cash', account2.cash, '$');
     if(account1_cash <= amount){
      account1.cash =0;
      let reminder = amount - account1_cash;
@@ -121,6 +121,21 @@ const changeAccountStatus = (name, IsActive)=>{
  }catch(error){console.log(`Could not toggle Account status: ${error}`)}
 }//changeAccountStatus
 
+const updateAccountDetails = (name, newname)=>{
+ console.log('trying to edit account name');
+ const accounts = displayAllAccounts();
+ let accountFound=findAccountByName(accounts, name);
+ try{
+  if(accountFound){
+   accountFound.name = newname;
+   console.log(`Account name ${name} was modified:`,accountFound.name);
+   saveAccounts(accounts);
+  }else{
+   console.log(`Account with name=${name}, was not found.`);
+  }
+ }catch(error){console.log(`Could not edit Account name: ${error}`)}
+}//updateAccountDetails
+
 const findAccountByPassPortID = (accounts, ppID)=>{ 
  const accountFound = accounts.find((account)=>{return account.ppID == ppID;});
  if(accountFound){//returns undefined if account is not found else  returns the account
@@ -131,20 +146,24 @@ const findAccountByPassPortID = (accounts, ppID)=>{
  }
 }//findAccountByPassPortID
 
+const displayOneAccount = (name)=>{
+ console.log('trying to an account by name');
+ const account = accounts.find((account)=>{return account.name == name;});
+ if(account){
+  console.log(account);
+ }else{console.log(`Account with name: ${name} could notbe found`)}
+}//displayOneAccount
+
 const findAccountByName = (accounts, name='')=>{
- console.log(name, ppID);
+ console.log('trying to find an account by name');
  let accountFound;
  if(accountFound = accounts.find((account)=>{return account.name == name;}) )
- {
-  return accountFound;//returns undefined if account is not found else  returns the accoutn
- }
- else if(accountFound = accounts.find((account)=>{return account.ppID == ppID;})) //this is a random number
  {
   return accountFound;//returns undefined if account is not found else  returns the accoutn
  }else{
   return false;
  }
-}//findAccountByNameOrppID
+}//findAccountByName
 
 const addNewAccount = (argv)=>{//newly created accounts are Active be defaut
  console.log('trying to add new account');
@@ -206,8 +225,8 @@ module.exports ={
  displayAllAccounts, 
  addNewAccount, 
  changeAccountStatus, 
- // displayOneAccount, 
- // updateAccountDetails, 
+ displayOneAccount, 
+ updateAccountDetails, 
  deleteOneAcount, 
  AddDeposit, 
  withdrawMoney, 
