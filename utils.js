@@ -11,19 +11,24 @@ const transferMoney = (ppID1, ppID2, amountToTransfer)=>{
  const accounts = displayAllAccounts(ppID1, ppID2, amountToTransfer);
  const account1 = findAccountByPassPortID(accounts, ppID1);
  const account2 = findAccountByPassPortID(accounts, ppID2);
+ const account1_cash = Number.parseInt(account1.cash);
+ const account1_credit = Number.parseInt(account1.credit);
+ const amount = Number.parseInt(amountToTransfer);
+ const account2_cash = Number.parseInt(account2.cash);
+
  if(account1.IsActive && account2.IsActive){
   try{
-   if(Number.parseInt(account1.cash) + Number.parseInt(account1.credit) >= Number.parseInt(amountToTransfer)){// can transfer the money
-    Number.parseInt(account2.cash) = Number.parseInt(account2.cash) + Number.parseInt(amountToTransfer);
-    console.log('account2.cash', account2.cash);
-    if(account1.cash <= amountToTransfer){
-     Number.parseInt(account1.cash) =0;
-     let reminder = Number.parseInt(amountToTransfer) - Number.parseInt(account1.cash);
-     Number.parseInt(account1.credit) = Number.parseInt(account1.credit) - reminder;
-     console.log('account1 cash and credit: ', account1.cash, account1.credit);
+   if(account1_cash + account1_credit >= amount){// can transfer the money
+    account2.cash = account2_cash + amount;
+    console.log('account2.cash', account2.cash, '$');
+    if(account1_cash <= amount){
+     account1.cash =0;
+     let reminder = amount - account1_cash;
+     account1.credit = account1_credit - reminder;
+     console.log('account1 cash and credit: ', account1.cash, '$', account1.credit, '$');
     }else{ //account1.cash > amountToTransfer;
-     Number.parseInt(account1.cash) = Number.parseInt(account1.cash) - Number.parseInt(amountToTransfer);
-     console.log('account1 cash and credit: ', account1.cash, account1.credit);
+     account1.cash = account1_cash - amount;
+     console.log('account1 New cash and New credit: ', account1.cash, '$', account1.credit, '$');
     }
     saveAccounts(accounts);
    }else{
@@ -102,7 +107,6 @@ const AddDeposit =(ppID=0,amount=0)=>{
 
 const changeAccountStatus = (name, IsActive)=>{
  console.log('trying to TOGGLE account status');
- // console.log('10', name, IsActive)
  const accounts = displayAllAccounts();
  let accountFound=findAccountByNameOrppID(accounts, name, IsActive);
  try{  
@@ -117,8 +121,7 @@ const changeAccountStatus = (name, IsActive)=>{
  }catch(error){console.log(`Could not toggle Account status: ${error}`)}
 }//changeAccountStatus
 
-const findAccountByPassPortID = (accounts, ppID)=>{
- console.log(ppID);
+const findAccountByPassPortID = (accounts, ppID)=>{ 
  const accountFound = accounts.find((account)=>{return account.ppID == ppID;});
  if(accountFound){//returns undefined if account is not found else  returns the account
   return accountFound;
@@ -128,7 +131,7 @@ const findAccountByPassPortID = (accounts, ppID)=>{
  }
 }//findAccountByPassPortID
 
-const findAccountByNameOrppID = (accounts, name='', ppID=0)=>{
+const findAccountByName = (accounts, name='')=>{
  console.log(name, ppID);
  let accountFound;
  if(accountFound = accounts.find((account)=>{return account.name == name;}) )
@@ -147,7 +150,7 @@ const addNewAccount = (argv)=>{//newly created accounts are Active be defaut
  console.log('trying to add new account');
  try{
   const accounts = displayAllAccounts();
-  const accountExists = findAccountByNameOrppID(accounts, argv.name, argv.ppID); 
+  const accountExists = findAccountByName(accounts, argv.name); 
   if(!accountExists){
    console.log(chalk.green(`Account with Name=${argv.name} will be created`));
    accounts.push({
@@ -167,7 +170,7 @@ const addNewAccount = (argv)=>{//newly created accounts are Active be defaut
 }//addNewAccount
 
 const deleteOneAcount = (name) =>{
- console.log('trying to DELETE one Account');
+ console.log('trying to DELETE an Account');
  const accounts = displayAllAccounts();
  const findAccount = accounts.find((account)=>{
   return account.name = name;
