@@ -78,7 +78,6 @@ app.post(`/api/accounts/create`, (req, res)=>{
 
 //display one account
 app.get(`/api/accounts/displayaccount/name`, (req,res)=>{
- console.log('hello')
  const {name} = req.params;
  console.log(name)
  const anAccount = displayOneAccount(name);
